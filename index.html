@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>67 GAME</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Impact', sans-serif;
+            touch-action: manipulation;
+            position: fixed;
+        }
+        #game {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 1;
+        }
+        #counter {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
+        #counter-label {
+            color: #ff6b9d;
+            font-size: 18px;
+            text-shadow: 0 0 20px #ff3366;
+        }
+        #counter-number {
+            color: #fff;
+            font-size: 60px;
+            font-weight: 900;
+            text-shadow: 0 0 30px #a855f7, 0 0 60px #7c3aed;
+        }
+        #musicBtn {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            background: #ff3366;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 900;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 30px #ff3366;
+            animation: shake 0.5s infinite;
+        }
+        #musicBtn.hidden { display: none; }
+        @keyframes shake {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(3deg); }
+            100% { transform: translateX(-50%) rotate(-3deg); }
+        }
+        #dancer {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            pointer-events: none;
+            width: 150px;
+            height: 150px;
+            border-radius: 20px;
+            box-shadow: 0 0 40px #a855f7;
+            object-fit: cover;
+        }
+        #tun-text {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff6b9d;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px #ff3366;
+            z-index: 5;
+            pointer-events: none;
+            animation: tunBounce 0.4s infinite alternate;
+        }
+        @keyframes tunBounce {
+            0% { transform: translateX(-50%) translateY(0); }
+            100% { transform: translateX(-50%) translateY(-10px); }
+        }
+        .pop-67 {
+            position: fixed;
+            font-size: 40px;
+            font-weight: 900;
+            color: #a855f7;
+            text-shadow: 0 0 30px #7c3aed;
+            pointer-events: none;
+            z-index: 50;
+            animation: popUp 1s forwards;
+        }
+        @keyframes popUp {
+            0% { opacity: 1; transform: scale(0.5); }
+            30% { opacity: 1; transform: scale(1.3); }
+            100% { opacity: 0; transform: translateY(-100px) scale(0.8); }
+        }
+        #hint {
+            position: fixed;
+            bottom: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #aaa;
+            font-family: Arial;
+            font-size: 14px;
+            z-index: 5;
+            pointer-events: none;
+            text-align: center;
+        }
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #1a1a2e 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+
+<div id="game">
+    <div id="counter">
+        <div id="counter-label">СИКС-СЕВЕНС</div>
+        <div id="counter-number">0</div>
+    </div>
+
+    <!-- 🎵 ПОМЕНЯЙ "gazana.mp3" НА ИМЯ СВОЕГО ФАЙЛА -->
+    <audio id="audioPlayer" loop>
+        <source src="gazana.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicBtn">🔊 ВКЛЮЧИТЬ ГАЗАНА 67</button>
+
+    <!-- 🖼️ ПОМЕНЯЙ "tun.gif" НА ИМЯ СВОЕГО ФАЙЛА -->
+    <img id="dancer" src="tun.gif" alt="Тун тун сахур">
+
+    <div id="hint">👇 ТЫКАЙ СЮДА 👇</div>
+    <div id="tun-text">ТУН ТУН ТУН САХУР</div>
+</div>
+
+<script>
+(function() {
+    const game = document.getElementById('game');
+    const counterDisplay = document.getElementById('counter-number');
+    const musicBtn = document.getElementById('musicBtn');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let count = 0;
+    let musicStarted = false;
+
+    function startMusic() {
+        if (musicStarted) return;
+        audioPlayer.play().then(() => {
+            musicStarted = true;
+            musicBtn.classList.add('hidden');
+        }).catch(() => {});
+    }
+
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startMusic();
+    });
+
+    function spawn67(x, y) {
+        const el = document.createElement('div');
+        el.className = 'pop-67';
+        el.textContent = '67';
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+    }
+
+    // ===========================================================
+    // 🔥 ОСНОВНАЯ ЛОГИКА — РАБОТАЕТ НА ВСЕХ УСТРОЙСТВАХ!
+    // ===========================================================
+    function handleTap(e) {
+        e.preventDefault();
+        
+        if (!musicStarted) startMusic();
+
+        count++;
+        counterDisplay.textContent = count;
+
+        // Получаем координаты касания/клика
+        let clientX, clientY;
+        if (e.touches) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+
+        spawn67(clientX, clientY);
+
+        if (navigator.vibrate) navigator.vibrate(15);
+    }
+
+    // Клик мыши (компьютер)
+    game.addEventListener('click', handleTap);
+
+    // Касание пальцем (телефон) — НАСТОЯЩАЯ МАГИЯ!
+    game.addEventListener('touchstart', handleTap, { passive: false });
+
+    // Сброс счётчика (зажать на 2 секунды)
+    let timer;
+    game.addEventListener('touchstart', () => {
+        timer = setTimeout(() => {
+            count = 0;
+            counterDisplay.textContent = '0';
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+        }, 2000);
+    });
+    game.addEventListener('touchend', () => clearTimeout(timer));
+    game.addEventListener('touchmove', () => clearTimeout(timer));
+
+    console.log('🔥 67 GAME РАБОТАЕТ!');
+})();
+</script>
+
+</body>
+</html>
